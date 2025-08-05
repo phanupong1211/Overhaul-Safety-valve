@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overhaul วาล์วนิรภัย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+        #slides-container::-webkit-scrollbar { display: none; }
+        #slides-container { -ms-overflow-style: none; scrollbar-width: none; }
+        .gemini-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .gemini-btn:hover { background-color: #4338ca; }
+        .tts-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background-color: rgba(0,0,0,0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .tts-btn:hover { background-color: rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body class="bg-gray-200 text-gray-800 m-0 p-0 overflow-hidden h-screen">
+
+<!-- AI Modal -->
+<div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 id="modal-title" class="text-2xl font-bold text-indigo-700"></h3>
+            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
+        </div>
+        <div id="modal-content" class="p-6 overflow-y-auto">
+            <!-- AI content will be injected here -->
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-75 z-[100] flex justify-center items-center flex-col gap-4 hidden">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+    <p id="loading-text" class="text-indigo-700 font-semibold text-lg">กำลังประมวลผล...</p>
+</div>
+
+
+<div id="presentation-wrapper" class="relative w-full h-full">
+    <!-- Slides Container -->
+    <div id="slides-container" class="w-full h-full flex overflow-x-auto scroll-snap-type-x-mandatory scroll-behavior-smooth">
+
+        <!-- Slide 1: Title Page -->
+        <div id="slide1" class="slide relative w-full h-full flex-shrink-0 flex flex-col justify-center items-center p-8 bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-center scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">การยกเครื่อง (Overhaul) วาล์วนิรภัย</h1>
+                <p class="text-2xl md:text-3xl mb-8">คู่มือการปฏิบัติงาน (WI: Work instruction)</p>
+                <div class="text-lg">
+                    <p><strong>ผู้จัดทำ:</strong> นาย ภานุพงศ์ ชนะยุทธ</p>
+                    <p><strong>ผู้จัดการฝ่าย:</strong> คุณ วงศกร เหมือนวงศ์</p>
+                    <p><strong>ผู้บริหาร:</strong> คุณ วีระ ธีรแนว</p>
+                </div>
+            </div>
+            <button class="tts-btn" data-slide-id="slide1"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 2: Table of Contents -->
+        <div id="slide2" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">สารบัญ</h2>
+                <ol class="list-decimal list-inside space-y-3 text-xl">
+                    <li>วัตถุประสงค์</li>
+                    <li>ขอบเขต</li>
+                    <li>คำจำกัดความ</li>
+                    <li>หน้าที่ความรับผิดชอบ</li>
+                    <li>อุปกรณ์และเครื่องมือ</li>
+                    <li>ผังกระบวนการปฏิบัติงาน (Work Flow)</li>
+                    <li>ขั้นตอนการปฏิบัติงาน</li>
+                    <li>เอกสารอ้างอิง</li>
+                </ol>
+            </div>
+            <button class="tts-btn" data-slide-id="slide2"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 3: Objective -->
+        <div id="slide3" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">1. วัตถุประสงค์</h2>
+                <ul class="list-disc list-inside space-y-4 text-lg">
+                    <li>เพื่อใช้เป็นขั้นตอนการดำเนินงาน Overhaul Safety Valve ได้อย่างถูกต้องตามมาตรฐาน และปลอดภัย</li>
+                    <li>เพื่อให้มั่นใจว่า Safety Valve ที่ผ่านการ Overhaul มีความถูกต้อง แม่นยำ เชื่อถือได้</li>
+                    <li>เพื่อเป็นหลักฐานแสดงวิธีการทำงานที่สามารถถ่ายทอดให้กับผู้เข้ามาปฏิบัติงานใหม่ พัฒนาให้การทำงานเป็นมืออาชีพ และใช้ประกอบการประเมินผลการปฏิบัติงานของบุคลากร</li>
+                </ul>
+            </div>
+            <button class="tts-btn" data-slide-id="slide3"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 4: Scope -->
+        <div id="slide4" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">2. ขอบเขต</h2>
+                <ul class="list-disc list-inside space-y-4 text-lg">
+                    <li>ใช้ในการ Overhaul Safety Valve ในกลุ่ม Double A และ Power plant NPS เท่านั้น</li>
+                    <li>ใช้ในการ Overhaul Safety Valve ตามวิธีการมาตรฐาน <span class="font-bold">ASME</span> และ <span class="font-bold">API</span></li>
+                </ul>
+            </div>
+            <button class="tts-btn" data-slide-id="slide4"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 5: Definitions -->
+        <div id="slide5" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">3. คำจำกัดความ</h2>
+                <ul class="list-disc list-inside space-y-3 text-lg">
+                    <li><strong>Safety Valve:</strong> อุปกรณ์ที่มีหน้าที่ป้องกันแรงดันในระบบเกิน</li>
+                    <li><strong>Overhaul:</strong> การซ่อมแซมครั้งใหญ่เพื่อฟื้นฟูสภาพให้มีประสิทธิภาพเหมือนเดิมมากที่สุด</li>
+                    <li><strong>Lapping:</strong> การบดวาล์วแบบละเอียดเพื่อให้หน้าสัมผัสของวาล์วเสมอกันทั้ง DISC และ SEAT</li>
+                    <li><strong>Test bench:</strong> เครื่องมือที่ใช้สำหรับทดสอบ Safety Valve</li>
+                    <li><strong>Pop test:</strong> การทดสอบ Set pressure โดยการอัดความดันเข้าด้าน Inlet ของ Safety Valve จนกระทั่ง Valve เปิด</li>
+                    <li><strong>Tightness test (Leakage test):</strong> การทดสอบความรั่วซึม จะทดสอบหลังจากการทดสอบ Pop test</li>
+                    <li><strong>Set pressure:</strong> แรงดันที่ตั้งค่าไว้เพื่อให้ Safety valve ทำงาน</li>
+                </ul>
+            </div>
+            <button class="tts-btn" data-slide-id="slide5"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 6: Responsibilities -->
+        <div id="slide6" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">4. หน้าที่ความรับผิดชอบ</h2>
+                <ul class="list-disc list-inside space-y-4 text-lg">
+                    <li><strong>พนักงานที่ปฏิบัติการ Overhaul:</strong> รับผิดชอบดาเนินการ Overhaul ตามที่ได้รับมอบหมาย</li>
+                    <li><strong>วิศวกร:</strong> รับผิดชอบในการคำนวณและประเมินผลการทดสอบ</li>
+                </ul>
+            </div>
+            <button class="tts-btn" data-slide-id="slide6"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 7: Tools & Equipment -->
+        <div id="slide7" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">5. อุปกรณ์และเครื่องมือ</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <tbody class="text-lg">
+                            <tr class="border-b"><td class="py-3 px-4 font-semibold">1. Bench Test</td><td class="py-3 px-4">1 SET</td></tr>
+                            <tr class="border-b bg-gray-100"><td class="py-3 px-4 font-semibold">2. Common tools</td><td class="py-3 px-4">1 SET</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4 font-semibold">3. รอกโซ่สั้น+ยาว</td><td class="py-3 px-4">1 SET</td></tr>
+                            <tr class="border-b bg-gray-100"><td class="py-3 px-4 font-semibold">4. Grinding & Lapping machine</td><td class="py-3 px-4">1 SET</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4 font-semibold">5. Digital Standard Pressure gauge</td><td class="py-3 px-4">1 EA</td></tr>
+                            <tr class="border-b bg-gray-100"><td class="py-3 px-4 font-semibold">6. Digital Vernier</td><td class="py-3 px-4">1 EA</td></tr>
+                            <tr class="border-b"><td class="py-3 px-4 font-semibold">7. กระดาษทรายหยาบ+ละเอียด</td><td class="py-3 px-4">1 SET</td></tr>
+                            <tr class="bg-gray-100"><td class="py-3 px-4 font-semibold">8. ชุดทดสอบการรั่วซึม</td><td class="py-3 px-4">1 SET</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <button class="tts-btn" data-slide-id="slide7"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 8: Work Flow -->
+        <div id="slide8" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">6. ผังกระบวนการปฏิบัติงาน (Work Flow)</h2>
+                <ol class="list-decimal list-inside space-y-3 text-lg">
+                    <li><strong>Inspection:</strong> ตรวจสอบและเตรียมอุปกรณ์ (10 นาที)</li>
+                    <li><strong>Initial Test Popping:</strong> ทดสอบ Set Pressure ก่อน Overhaul (10 นาที)</li>
+                    <li><strong>Disassembling:</strong> ถอดแยกชิ้นส่วน (1 ชั่วโมง)</li>
+                    <li><strong>Cleaning:</strong> ทำความสะอาดและพ่นสี (1 ชั่วโมง)</li>
+                    <li><strong>Lapping:</strong> บดวาล์ว Seat และ Disc (2 ชั่วโมง)</li>
+                    <li><strong>Assembling:</strong> ประกอบชิ้นส่วนกลับ (1 ชั่วโมง)</li>
+                    <li><strong>Pop test:</strong> ทดสอบ Set pressure (10 นาที)</li>
+                    <li><strong>Tightness test:</strong> ทดสอบการรั่วซึม (10 นาที)</li>
+                    <li><strong>จัดทำ Report:</strong> จัดทำรายงานส่งลูกค้า (10 นาที)</li>
+                </ol>
+            </div>
+            <button class="tts-btn" data-slide-id="slide8"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 9: Inspection -->
+        <div id="slide9" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.1 การตรวจสอบ (Inspection)</h2>
+                <p class="mb-4 text-lg">เป็นการตรวจสอบอุปกรณ์ก่อนทำการ Overhaul เพื่อให้ทราบว่า มีชิ้นส่วนไหนชำรุดเสียหาย และเพื่อป้องกันอันตราย</p>
+                <ul class="list-disc list-inside space-y-2 mb-6 text-lg">
+                    <li>ตรวจสอบข้อมูลจำเพาะของวาล์วจาก NAMEPLATE</li>
+                    <li>ตรวจสอบตัววาล์วว่ามีการทะลุหรือรอยแตกหรือไม่</li>
+                    <li>ตรวจสอบหน้าแปลนทั้งสองด้านว่ามีรอยกัดเซาะหรือไม่</li>
+                    <li>ตรวจสอบสภาพ BOLT & NUT</li>
+                    <li>ตรวจสอบ UPPER RING และ LOWER RING ADJUSTING SCREW</li>
+                </ul>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div class="text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/Crosby%20Style%20HCI%20Nameplate.png" alt="ตัวอย่าง Nameplate" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.1 ตัวอย่าง Nameplate</p></div>
+                <div class="text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/หน้าแปลน.png" alt="หน้าแปลน" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.2 หน้าแปลน</p></div>
+            </div>
+            <div class="mt-6">
+                <button class="gemini-btn" data-slide-id="slide9" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide9"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 10: Initial Test Popping -->
+        <div id="slide10" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.2 Initial Test Popping</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="slide-content">
+                    <h3 class="text-2xl font-semibold mb-3">การเตรียมการ</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg">
+                        <li>ตรวจสอบอุปกรณ์ต่อพ่วงกับ Test Bench</li>
+                        <li>ตรวจสอบ Standard Gauge ให้แสดงค่า 0.00 bar</li>
+                        <li>พื้นที่ปฏิบัติงานต้องปลอดภัยและมีอากาศถ่ายเท</li>
+                    </ul>
+                    <h3 class="text-2xl font-semibold mt-6 mb-3">ขั้นตอนการทดสอบ</h3>
+                     <ul class="list-disc list-inside space-y-2 text-lg">
+                        <li>ยกวาล์วขึ้นแท่นทดสอบ</li>
+                        <li>ค่อยๆ ปรับแรงดันจน Safety valve เปิด และบันทึกค่า</li>
+                        <li>ปล่อยแรงดันออกจากระบบเพื่อเตรียมถอดชิ้นส่วน</li>
+                    </ul>
+                </div>
+                <div class="text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/Safety%20Valve%20บนแท่น%20Test%20Bench%20เพื่อทดสอบ%20Set%20Pressure.png" alt="Safety Valve บนแท่น Test Bench" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.7 Safety Valve บนแท่น Test Bench</p></div>
+            </div>
+            <div class="mt-6">
+                <button class="gemini-btn" data-slide-id="slide10" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide10"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 11: Disassembling -->
+        <div id="slide11" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="slide-content flex-1">
+                    <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.3 การถอดแยกชิ้นส่วน (Disassembling)</h2>
+                    <p class="mb-4 text-lg">ปฏิบัติตามคำแนะนำในการรื้อชิ้นส่วนของ Safety valve ตามมาตรฐาน <span class="font-bold">API 526</span></p>
+                    <ul class="list-disc list-inside space-y-3 text-lg">
+                        <li><strong>ถอด Cap และ lever:</strong> วัดระยะ Adjusting screw และบันทึกค่า</li>
+                        <li><strong>คลาย lock nut และ Adjusting screw:</strong> เพื่อลดแรงกดสปริง</li>
+                        <li><strong>ถอด bonnet, Spring และ Spindle/Disc</strong></li>
+                        <li><strong>วัดขนาด:</strong> ใช้ Vernier Caliper วัดความหนาของ Disc, Seat และความยาวของ Spring แล้วบันทึกค่า</li>
+                    </ul>
+                </div>
+                <div class="flex-1 text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/Cross-sectional%20view%20of%20type%20526.png" alt="Cross-sectional view of type 526" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.9 โครงสร้างภายใน Safety valve</p></div>
+            </div>
+             <div class="mt-6">
+                <button class="gemini-btn" data-slide-id="slide11" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide11"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 12: Cleaning -->
+        <div id="slide12" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.4 การทำความสะอาด (Cleaning)</h2>
+                <ul class="list-disc list-inside space-y-3 text-lg">
+                    <li>ทำความสะอาดชิ้นส่วนภายใน body และ bonnet ด้วยแปรงถ้วยลวดและเครื่องเจียรลม</li>
+                    <li>พ่นสี body และ bonnet ทั้งภายในและภายนอก</li>
+                    <li><span class="font-bold text-red-600">ข้อควรระวัง:</span> สำหรับวาล์วอุณหภูมิสูง ต้องใช้สีทนความร้อน 500°C</li>
+                    <li><span class="font-bold text-red-600">ข้อควรระวัง:</span> ป้องกันพื้นผิว seat ไม่ให้โดนสี</li>
+                    <li><strong>การเปลี่ยนชิ้นส่วนใหม่ (Change New Part):</strong> ในกรณีที่เสียหายหนัก ชิ้นส่วนใหม่ต้องนำมา Lapping ก่อนใช้งาน</li>
+                </ul>
+            </div>
+             <div class="mt-6">
+                <button class="gemini-btn" data-slide-id="slide12" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide12"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 13: Lapping -->
+        <div id="slide13" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.5 การบดวาล์ว (Lapping)</h2>
+                <p class="mb-4 text-lg">Lapping คือการบดวาล์วแบบละเอียดเพื่อให้หน้าสัมผัสของ DISC และ SEAT เสมอกัน โดยใช้กระดาษทรายไล่จากเบอร์หยาบไปละเอียด</p>
+                <h3 class="text-2xl font-semibold mb-3">วิธีการ Lapping 3 กรณี:</h3>
+                <div class="space-y-4 text-lg">
+                    <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-sm"><p><span class="font-bold">กรณีที่ 1 (รอยลึกมาก):</span> ต้องผ่านการ Machine ก่อน แล้วตามด้วยการ Lapping ด้วยกระดาษทรายเบอร์ 60, 30, 15, และ 9 Microns</p></div>
+                    <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-sm"><p><span class="font-bold">กรณีที่ 2 (รอยไม่ลึก):</span> เริ่ม Lapping ด้วยเบอร์ 60, 30, 15, และ 9 Microns</p></div>
+                    <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-sm"><p><span class="font-bold">กรณีที่ 3 (รอยน้อย):</span> ใช้กระดาษทรายเบอร์ 15 และปิดด้วยเบอร์ 9</p></div>
+                </div>
+                <p class="mt-6 text-lg"><span class="font-bold text-red-600">ข้อควรสังเกต:</span> หน้าสัมผัสต้องกินเต็มหน้าและไม่เอียง. หลัง Lapping ให้ตรวจสอบรอยและวัดความหนาอีกครั้ง</p>
+            </div>
+             <div class="mt-6">
+                <button class="gemini-btn" data-slide-id="slide13" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide13"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 14: Assembling -->
+        <div id="slide14" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.6 การประกอบ (Assembling)</h2>
+                <p class="mb-4 text-lg">ปฏิบัติตามคำแนะนำในการประกอบชิ้นส่วนของ Safety valve ตามมาตรฐาน <span class="font-bold">API 526</span></p>
+                <ol class="list-decimal list-inside space-y-3 text-lg">
+                    <li>ประกอบ spindle เข้ากับ disc</li>
+                    <li>วาง Disc อย่างระมัดระวังโดยให้ Spindle คว่ำลงบน Seat</li>
+                    <li>ใส่ bonnet ลงบน body และขัน Nut ให้แน่น</li>
+                    <li>ขัน adjusting screw กลับไปที่ระยะเดิมก่อนรื้อ</li>
+                </ol>
+            </div>
+             <div class="mt-6">
+                <button class="gemini-btn" data-slide-id="slide14" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide14"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 15: Pop test -->
+        <div id="slide15" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.7 Pop test (Pressure test)</h2>
+                <p class="mb-4 text-lg">ทดสอบ Pop test ด้วย Test Bench. หากค่าไม่ตรง ให้ปรับที่ adjusting screw (ตามเข็ม=เพิ่ม, ทวนเข็ม=ลด). เมื่อได้ค่าที่ยอมรับ ให้ทดสอบซ้ำ 3 ครั้ง</p>
+                <h3 class="text-2xl font-semibold mb-3">ตารางที่ 1: Set pressure tolerances</h3>
+                <div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead class="bg-indigo-100"><tr><th class="py-3 px-4 font-bold">Set Pressure P<sub>set</sub></th><th class="py-3 px-4 font-bold">Tolerance</th></tr></thead><tbody class="text-lg"><tr class="border-b"><td class="py-3 px-4">P<sub>set</sub> ≤ 1,65 barg (24 psig)</td><td class="py-3 px-4">+ 0,05 barg (1 psig)</td></tr><tr class="border-b"><td class="py-3 px-4">1,65 barg < P<sub>set</sub> < 3,96 barg</td><td class="py-3 px-4">+ 0,1 barg (2 psig)</td></tr><tr><td class="py-3 px-4">P<sub>set</sub> ≥ 3,96 barg (58 psig)</td><td class="py-3 px-4">+ 3%</td></tr></tbody></table></div>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-4">
+                <button class="gemini-btn" data-slide-id="slide15" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn bg-amber-600 hover:bg-amber-700" data-slide-id="slide15" data-action="diagnose">✨ หากทดสอบไม่ผ่าน? วิเคราะห์สาเหตุ</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide15"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 16: Tightness test -->
+        <div id="slide16" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+             <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.8 Tightness test (Leakage test)</h2>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <div class="text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/Apparatus%20to%20test%20seat%20tightness%20with%20air.%20(API%20527).png" alt="Apparatus to test seat tightness with air" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.13 Apparatus to test seat tightness with air (API 527)</p></div>
+                <div class="slide-content">
+                    <p class="mb-4 text-lg">ทดสอบความรั่วซึมหลัง Pop test ตามมาตรฐาน <span class="font-bold">API 527</span>. ใช้อากาศเป็นตัวกลางทดสอบ สังเกตการณ์ 1 นาที และนับจำนวนฟองอากาศ</p>
+                    <h3 class="text-2xl font-semibold mb-3">ตารางที่ 2: Test Pressure</h3>
+                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead class="bg-indigo-100"><tr><th class="py-3 px-4 font-bold">Set Pressure / CDTP, p₀</th><th class="py-3 px-4 font-bold">Test pressure, p<sub>test</sub></th></tr></thead><tbody class="text-lg"><tr class="border-b"><td class="py-3 px-4">0,1 &lt; p₀ &lt; 0,7 (bar)</td><td class="py-3 px-4">0,5 * p₀</td></tr><tr class="border-b"><td class="py-3 px-4">0,7 ≤ p₀ ≤ 3,5 (bar)</td><td class="py-3 px-4">p₀ - 0,35 (bar)</td></tr><tr><td class="py-3 px-4">p₀ > 3,5 (bar)</td><td class="py-3 px-4">0,9 * p₀</td></tr></tbody></table></div>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button class="gemini-btn" data-slide-id="slide16" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide16"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 17: Tightness test Acceptance Criteria -->
+        <div id="slide17" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.8 Tightness test (ต่อ)</h2>
+                <h3 class="text-2xl font-semibold mb-3">ตารางที่ 3: Acceptance Criteria (จำนวนฟองอากาศที่อนุญาต/นาที)</h3>
+                <div class="overflow-x-auto"><table class="w-full text-left border-collapse text-sm md:text-base"><thead class="bg-indigo-100"><tr><th class="py-3 px-4 font-bold" rowspan="2">Sealing Type</th><th class="py-3 px-4 font-bold text-center" colspan="2">Set pressure p₀</th><th class="py-3 px-4 font-bold text-center" colspan="2">Allowed Bubbles/min</th></tr><tr><th class="py-3 px-4 font-bold bg-indigo-100">bar</th><th class="py-3 px-4 font-bold bg-indigo-100">psi</th><th class="py-3 px-4 font-bold bg-indigo-100">d₀ &lt; 18mm</th><th class="py-3 px-4 font-bold bg-indigo-100">d₀ > 18mm</th></tr></thead><tbody><tr class="border-b"><td class="py-2 px-4 font-semibold" rowspan="3">Metal-to-metal</td><td class="py-2 px-4">0,1 - 66</td><td class="py-2 px-4">1,45 - 657,3</td><td class="py-2 px-4 text-center">40</td><td class="py-2 px-4 text-center">20</td></tr><tr class="border-b"><td class="py-2 px-4">> 66 - 165</td><td class="py-2 px-4">> 657,3 - 2393,1</td><td class="py-2 px-4 text-center">60</td><td class="py-2 px-4 text-center">30</td></tr><tr class="border-b"><td class="py-2 px-4">> 165 - 700</td><td class="py-2 px-4">> 2393,1 - 10152,6</td><td class="py-2 px-4 text-center">80</td><td class="py-2 px-4 text-center">40</td></tr><tr class="border-b"><td class="py-2 px-4 font-semibold">Soft sealing plate</td><td class="py-2 px-4" colspan="2">All ranges</td><td class="py-2 px-4 text-center">20</td><td class="py-2 px-4 text-center">10</td></tr><tr><td class="py-2 px-4 font-semibold">Soft sealing O-Ring</td><td class="py-2 px-4" colspan="2">All ranges</td><td class="py-2 px-4 text-center">0</td><td class="py-2 px-4 text-center">0</td></tr></tbody></table></div>
+            </div>
+            <div class="mt-6">
+                 <button class="gemini-btn bg-amber-600 hover:bg-amber-700" data-slide-id="slide17" data-action="diagnose">✨ หากทดสอบไม่ผ่าน? วิเคราะห์สาเหตุ</button>
+            </div>
+            <button class="tts-btn" data-slide-id="slide17"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 18: Final Quality Check -->
+        <div id="slide18" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.9 การตรวจสอบคุณภาพก่อนส่งมอบ</h2>
+                <p class="mb-4 text-lg">จำเป็นจะต้องมีการตรวจสอบดังนี้:</p>
+                <ul class="list-disc list-inside space-y-3 text-lg">
+                    <li>น็อตล๊อคทุกตัวว่ามีการขันแน่นหรือไม่?</li>
+                    <li>ฝาครอบ ADJUST SCREW ได้ทำการซีลผ่าน TAG เพื่อป้องกันการปรับตั้งหรือไม่?</li>
+                    <li>น็อตล๊อค LOWER RING DOWN ได้ขันแน่นหรือไม่?</li>
+                    <li>ข้อมูลที่ TAG ถูกต้องหรือไม่?</li>
+                </ul>
+            </div>
+            <button class="tts-btn" data-slide-id="slide18"><i class="fas fa-volume-up"></i></button>
+        </div>
+        
+        <!-- Slide 19: Overhaul Frequency -->
+        <div id="slide19" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-gray-50 scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">7.10 ระยะเวลาและความถี่ในการ Overhaul</h2>
+                <ul class="list-disc list-inside space-y-3 text-lg">
+                    <li><strong>12 เดือน ต่อครั้ง</strong> (ตามมาตรฐาน ASME Section VIII & Section I)</li>
+                    <li>ขึ้นอยู่กับมาตรฐานการตรวจความปลอดภัยของ Boiler & Pressure Vessel ของแต่ละบริษัท</li>
+                    <li>เมื่อ PSV (วาล์วนิรภัย) ทำงานผิดปกติ</li>
+                </ul>
+            </div>
+            <button class="tts-btn" data-slide-id="slide19"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 20: References -->
+        <div id="slide20" class="slide relative w-full h-full flex-shrink-0 p-8 md:p-12 bg-white scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">เอกสารอ้างอิง</h2>
+                <ul class="list-disc list-inside space-y-3 text-lg">
+                    <li>LESER Information Document – Deutschland Maintenance Handbook for LESER Product Group API</li>
+                    <li>API Standard 527 Seat Tightness of Pressure Relief Valves</li>
+                </ul>
+            </div>
+            <button class="tts-btn" data-slide-id="slide20"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Slide 21: Q&A -->
+        <div id="slide21" class="slide relative w-full h-full flex-shrink-0 flex flex-col justify-center items-center p-8 bg-gradient-to-br from-gray-700 to-gray-900 text-white text-center scroll-snap-align-start overflow-y-auto">
+            <div class="slide-content">
+                <h1 class="text-5xl font-bold">ถาม - ตอบ</h1>
+            </div>
+            <button class="tts-btn" data-slide-id="slide21"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+    </div>
+
+    <!-- Navigation Buttons -->
+    <button id="prev-btn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition disabled:opacity-25 z-10">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button id="next-btn" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition disabled:opacity-25 z-10">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Progress Bar and Slide Counter -->
+    <div class="absolute bottom-0 left-0 w-full p-4 z-10">
+        <div class="flex justify-center items-center">
+             <div id="slide-counter" class="text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">1 / 21</div>
+        </div>
+        <div id="progress-container" class="w-full bg-black bg-opacity-25 rounded-full h-2.5 mt-2">
+            <div id="progress-bar" class="bg-blue-400 h-2.5 rounded-full transition-all duration-300 ease-in-out"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Elements
+        const slidesContainer = document.getElementById('slides-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const slideCounter = document.getElementById('slide-counter');
+        const slides = document.querySelectorAll('.slide');
+        const modal = document.getElementById('ai-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingText = document.getElementById('loading-text');
+
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+        let audioContext;
+        let currentAudio = null;
+
+        // --- Navigation Logic ---
+        function updateControls() {
+            const progressPercentage = (currentSlide / (totalSlides - 1)) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function goToSlide(slideIndex) {
+            if (slideIndex < 0 || slideIndex >= totalSlides) return;
+            const scrollAmount = slides[slideIndex].offsetLeft;
+            slidesContainer.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+            currentSlide = slideIndex;
+            updateControls();
+        }
+
+        nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+        prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+        
+        let scrollTimeout;
+        slidesContainer.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const newSlideIndex = Math.round(slidesContainer.scrollLeft / slidesContainer.clientWidth);
+                if(newSlideIndex !== currentSlide) {
+                    currentSlide = newSlideIndex;
+                    updateControls();
+                }
+            }, 150);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+            else if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+            else if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+        });
+
+        // --- Modal Logic ---
+        function showModal(title, content) {
+            modalTitle.textContent = title;
+            modalContent.innerHTML = content;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // --- Loading Overlay Logic ---
+        function showLoading(text = 'กำลังประมวลผล...') {
+            loadingText.textContent = text;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+        
+        // --- Gemini API Logic ---
+        const API_KEY = "AIzaSyBbokJJMSIj6FM_rNuWdcKqut1YPeoUHJo"; // Provided by the environment
+
+        // Function to get text response from Gemini
+        async function getGeminiTextResponse(prompt) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                return result.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                return "ขออภัย, เกิดข้อผิดพลาดในการเรียกข้อมูลจาก AI";
+            }
+        }
+
+        // --- TTS Logic ---
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcmData, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2; // 16-bit
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcmData.length * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bytesPerSample * 8, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            const pcm16 = new Int16Array(pcmData.buffer);
+            for (let i = 0; i < pcmData.length; i++) {
+                view.setInt16(44 + i * 2, pcmData[i], true);
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+        
+        async function speak(text, button) {
+             if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+                button.innerHTML = '<i class="fas fa-volume-up"></i>';
+                return;
+            }
+
+            showLoading('กำลังสร้างเสียงพูด...');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
+                const payload = {
+                    contents: [{ parts: [{ text: `โปรดอ่านข้อความต่อไปนี้ด้วยน้ำเสียงชัดเจนและเป็นทางการ: ${text}` }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } // A clear voice
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error(`TTS API Error: ${response.statusText}`);
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                    
+                    const pcmBuffer = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmBuffer);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    currentAudio = new Audio(audioUrl);
+                    currentAudio.play();
+                    button.innerHTML = '<i class="fas fa-stop"></i>';
+
+                    currentAudio.onended = () => {
+                        button.innerHTML = '<i class="fas fa-volume-up"></i>';
+                        currentAudio = null;
+                    };
+
+                } else {
+                    throw new Error("Invalid audio data in response.");
+                }
+
+            } catch (error) {
+                console.error("TTS failed:", error);
+                showModal("ข้อผิดพลาด", "ขออภัย, ไม่สามารถสร้างเสียงพูดได้ในขณะนี้");
+                button.innerHTML = '<i class="fas fa-volume-up"></i>';
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // --- Event Listeners for AI buttons ---
+        document.querySelectorAll('.gemini-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const slideId = button.dataset.slideId;
+                const action = button.dataset.action;
+                const slideContentElement = document.querySelector(`#${slideId} .slide-content`);
+                const content = slideContentElement.innerText;
+
+                let prompt = "";
+                let title = "";
+
+                if (action === 'safety') {
+                    title = "✨ คำแนะนำด้านความปลอดภัยเพิ่มเติม";
+                    prompt = `You are an expert safety inspector for industrial equipment. Based on the following step from a safety valve overhaul manual, provide 3 crucial and specific safety tips for the technician. The tips must be practical and easy to understand. Respond in Thai language.\n\n---\n**ขั้นตอนการทำงาน:**\n${content}\n---`;
+                } else if (action === 'diagnose') {
+                    title = "✨ การวิเคราะห์สาเหตุที่เป็นไปได้";
+                    prompt = `You are an expert maintenance engineer specializing in pressure relief valves. A technician's test has failed during a safety valve overhaul. Based on the test description below, list potential causes for the failure and suggest a checklist of items to inspect. Keep the language clear and direct for a technician. Respond in Thai language.\n\n---\n**ขั้นตอนการทดสอบที่ไม่ผ่าน:**\n${content}\n---`;
+                }
+
+                if (prompt) {
+                    showLoading();
+                    const aiResponse = await getGeminiTextResponse(prompt);
+                    hideLoading();
+                    showModal(title, aiResponse.replace(/\n/g, '<br>'));
+                }
+            });
+        });
+        
+        document.querySelectorAll('.tts-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const slideId = e.currentTarget.dataset.slideId;
+                const slideContentElement = document.querySelector(`#${slideId} .slide-content`);
+                const textToSpeak = slideContentElement.innerText;
+                speak(textToSpeak, e.currentTarget);
+            });
+        });
+
+        // Initial setup
+        updateControls();
+    });
+</script>
+
+</body>
+</html>
