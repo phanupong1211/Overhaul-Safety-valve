@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overhaul วาล์วนิรภัย</title>
+    <title>การยกเครื่อง (Overhaul) วาล์วนิรภัย</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,8 +23,13 @@
             color: white;
             font-weight: 600;
             transition: background-color 0.2s;
+            cursor: pointer;
         }
-        .gemini-btn:hover { background-color: #4338ca; }
+        .gemini-btn:hover:not(:disabled) { background-color: #4338ca; }
+        .gemini-btn:disabled {
+            background-color: #a5b4fc;
+            cursor: not-allowed;
+        }
         .tts-btn {
             position: absolute;
             top: 1.5rem;
@@ -40,17 +45,40 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        .tts-btn:hover { background-color: rgba(0,0,0,0.5); }
+        .tts-btn:hover:not(:disabled) { background-color: rgba(0,0,0,0.5); }
+        .tts-btn:disabled {
+            background-color: rgba(128,128,128,0.3);
+            color: rgba(255,255,255,0.5);
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-gray-200 text-gray-800 m-0 p-0 overflow-hidden h-screen">
+
+<!-- API Key Modal -->
+<div id="api-key-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[60] flex justify-center items-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-6 text-center">
+            <h3 class="text-2xl font-bold text-indigo-700 mb-4">เปิดใช้งานฟีเจอร์ AI</h3>
+            <p class="text-gray-600 mb-4">
+                หากต้องการใช้งานผู้ช่วย AI และระบบอ่านออกเสียง กรุณาใส่ Gemini API Key ของคุณ
+                <br>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-600 hover:underline">รับ API Key ฟรีที่นี่</a>
+            </p>
+            <input type="password" id="api-key-input" class="w-full px-3 py-2 border border-gray-300 rounded-md mb-4" placeholder="AIzaSy...">
+            <button id="save-api-key-btn" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition font-semibold">บันทึกและใช้งาน AI</button>
+            <button id="skip-api-key-btn" class="w-full mt-3 text-sm text-gray-500 hover:text-gray-800 hover:underline">ดำเนินการต่อโดยไม่ใช้ AI</button>
+        </div>
+    </div>
+</div>
+
 
 <!-- AI Modal -->
 <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 hidden">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         <div class="flex justify-between items-center p-4 border-b">
             <h3 id="modal-title" class="text-2xl font-bold text-indigo-700"></h3>
-            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
         </div>
         <div id="modal-content" class="p-6 overflow-y-auto">
             <!-- AI content will be injected here -->
@@ -80,7 +108,7 @@
                     <p><strong>ผู้บริหาร:</strong> คุณ วีระ ธีรแนว</p>
                 </div>
             </div>
-            <button class="tts-btn" data-slide-id="slide1"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide1" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 2: Table of Contents -->
@@ -98,7 +126,7 @@
                     <li>เอกสารอ้างอิง</li>
                 </ol>
             </div>
-            <button class="tts-btn" data-slide-id="slide2"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide2" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 3: Objective -->
@@ -111,7 +139,7 @@
                     <li>เพื่อเป็นหลักฐานแสดงวิธีการทำงานที่สามารถถ่ายทอดให้กับผู้เข้ามาปฏิบัติงานใหม่ พัฒนาให้การทำงานเป็นมืออาชีพ และใช้ประกอบการประเมินผลการปฏิบัติงานของบุคลากร</li>
                 </ul>
             </div>
-            <button class="tts-btn" data-slide-id="slide3"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide3" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 4: Scope -->
@@ -123,7 +151,7 @@
                     <li>ใช้ในการ Overhaul Safety Valve ตามวิธีการมาตรฐาน <span class="font-bold">ASME</span> และ <span class="font-bold">API</span></li>
                 </ul>
             </div>
-            <button class="tts-btn" data-slide-id="slide4"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide4" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 5: Definitions -->
@@ -132,7 +160,7 @@
                 <h2 class="text-3xl font-bold text-indigo-700 border-b-4 border-indigo-300 pb-2 mb-6">3. คำจำกัดความ</h2>
                 <ul class="list-disc list-inside space-y-3 text-lg">
                     <li><strong>Safety Valve:</strong> อุปกรณ์ที่มีหน้าที่ป้องกันแรงดันในระบบเกิน</li>
-                    <li><strong>Overhaul:</strong> การซ่อมแซมครั้งใหญ่เพื่อฟื้นฟูสภาพให้มีประสิทธิภาพเหมือนเดิมมากที่สุด</li>
+                    <li><strong>Overhaul:</strong> การซ่อมแซมครั้งใหญ่หรือฟื้นฟูสภาพให้มีประสิทธิภาพเหมือนเดิมมากที่สุด</li>
                     <li><strong>Lapping:</strong> การบดวาล์วแบบละเอียดเพื่อให้หน้าสัมผัสของวาล์วเสมอกันทั้ง DISC และ SEAT</li>
                     <li><strong>Test bench:</strong> เครื่องมือที่ใช้สำหรับทดสอบ Safety Valve</li>
                     <li><strong>Pop test:</strong> การทดสอบ Set pressure โดยการอัดความดันเข้าด้าน Inlet ของ Safety Valve จนกระทั่ง Valve เปิด</li>
@@ -140,7 +168,7 @@
                     <li><strong>Set pressure:</strong> แรงดันที่ตั้งค่าไว้เพื่อให้ Safety valve ทำงาน</li>
                 </ul>
             </div>
-            <button class="tts-btn" data-slide-id="slide5"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide5" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 6: Responsibilities -->
@@ -152,7 +180,7 @@
                     <li><strong>วิศวกร:</strong> รับผิดชอบในการคำนวณและประเมินผลการทดสอบ</li>
                 </ul>
             </div>
-            <button class="tts-btn" data-slide-id="slide6"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide6" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 7: Tools & Equipment -->
@@ -174,7 +202,7 @@
                     </table>
                 </div>
             </div>
-            <button class="tts-btn" data-slide-id="slide7"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide7" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 8: Work Flow -->
@@ -193,7 +221,7 @@
                     <li><strong>จัดทำ Report:</strong> จัดทำรายงานส่งลูกค้า (10 นาที)</li>
                 </ol>
             </div>
-            <button class="tts-btn" data-slide-id="slide8"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide8" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 9: Inspection -->
@@ -214,9 +242,9 @@
                 <div class="text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/หน้าแปลน.png" alt="หน้าแปลน" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.2 หน้าแปลน</p></div>
             </div>
             <div class="mt-6">
-                <button class="gemini-btn" data-slide-id="slide9" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn" data-slide-id="slide9" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide9"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide9" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 10: Initial Test Popping -->
@@ -240,9 +268,9 @@
                 <div class="text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/Safety%20Valve%20บนแท่น%20Test%20Bench%20เพื่อทดสอบ%20Set%20Pressure.png" alt="Safety Valve บนแท่น Test Bench" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.7 Safety Valve บนแท่น Test Bench</p></div>
             </div>
             <div class="mt-6">
-                <button class="gemini-btn" data-slide-id="slide10" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn" data-slide-id="slide10" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide10"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide10" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 11: Disassembling -->
@@ -261,9 +289,9 @@
                 <div class="flex-1 text-center"><img src="https://storage.googleapis.com/generativeai-downloads/images/Cross-sectional%20view%20of%20type%20526.png" alt="Cross-sectional view of type 526" class="mx-auto rounded-lg shadow-md border"><p class="mt-2 text-sm text-gray-600">รูปที่ 7.9 โครงสร้างภายใน Safety valve</p></div>
             </div>
              <div class="mt-6">
-                <button class="gemini-btn" data-slide-id="slide11" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn" data-slide-id="slide11" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide11"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide11" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 12: Cleaning -->
@@ -279,9 +307,9 @@
                 </ul>
             </div>
              <div class="mt-6">
-                <button class="gemini-btn" data-slide-id="slide12" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn" data-slide-id="slide12" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide12"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide12" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 13: Lapping -->
@@ -298,9 +326,9 @@
                 <p class="mt-6 text-lg"><span class="font-bold text-red-600">ข้อควรสังเกต:</span> หน้าสัมผัสต้องกินเต็มหน้าและไม่เอียง. หลัง Lapping ให้ตรวจสอบรอยและวัดความหนาอีกครั้ง</p>
             </div>
              <div class="mt-6">
-                <button class="gemini-btn" data-slide-id="slide13" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn" data-slide-id="slide13" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide13"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide13" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 14: Assembling -->
@@ -316,9 +344,9 @@
                 </ol>
             </div>
              <div class="mt-6">
-                <button class="gemini-btn" data-slide-id="slide14" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn" data-slide-id="slide14" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide14"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide14" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 15: Pop test -->
@@ -330,10 +358,10 @@
                 <div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead class="bg-indigo-100"><tr><th class="py-3 px-4 font-bold">Set Pressure P<sub>set</sub></th><th class="py-3 px-4 font-bold">Tolerance</th></tr></thead><tbody class="text-lg"><tr class="border-b"><td class="py-3 px-4">P<sub>set</sub> ≤ 1,65 barg (24 psig)</td><td class="py-3 px-4">+ 0,05 barg (1 psig)</td></tr><tr class="border-b"><td class="py-3 px-4">1,65 barg < P<sub>set</sub> < 3,96 barg</td><td class="py-3 px-4">+ 0,1 barg (2 psig)</td></tr><tr><td class="py-3 px-4">P<sub>set</sub> ≥ 3,96 barg (58 psig)</td><td class="py-3 px-4">+ 3%</td></tr></tbody></table></div>
             </div>
             <div class="mt-6 flex flex-wrap gap-4">
-                <button class="gemini-btn" data-slide-id="slide15" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
-                <button class="gemini-btn bg-amber-600 hover:bg-amber-700" data-slide-id="slide15" data-action="diagnose">✨ หากทดสอบไม่ผ่าน? วิเคราะห์สาเหตุ</button>
+                <button class="gemini-btn" data-slide-id="slide15" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn bg-amber-600 hover:bg-amber-700" data-slide-id="slide15" data-action="diagnose" disabled>✨ หากทดสอบไม่ผ่าน? วิเคราะห์สาเหตุ</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide15"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide15" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 16: Tightness test -->
@@ -348,9 +376,9 @@
                 </div>
             </div>
             <div class="mt-6">
-                <button class="gemini-btn" data-slide-id="slide16" data-action="safety">✨ ขอคำแนะนำด้านความปลอดภัย</button>
+                <button class="gemini-btn" data-slide-id="slide16" data-action="safety" disabled>✨ ขอคำแนะนำด้านความปลอดภัย</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide16"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide16" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 17: Tightness test Acceptance Criteria -->
@@ -361,9 +389,9 @@
                 <div class="overflow-x-auto"><table class="w-full text-left border-collapse text-sm md:text-base"><thead class="bg-indigo-100"><tr><th class="py-3 px-4 font-bold" rowspan="2">Sealing Type</th><th class="py-3 px-4 font-bold text-center" colspan="2">Set pressure p₀</th><th class="py-3 px-4 font-bold text-center" colspan="2">Allowed Bubbles/min</th></tr><tr><th class="py-3 px-4 font-bold bg-indigo-100">bar</th><th class="py-3 px-4 font-bold bg-indigo-100">psi</th><th class="py-3 px-4 font-bold bg-indigo-100">d₀ &lt; 18mm</th><th class="py-3 px-4 font-bold bg-indigo-100">d₀ > 18mm</th></tr></thead><tbody><tr class="border-b"><td class="py-2 px-4 font-semibold" rowspan="3">Metal-to-metal</td><td class="py-2 px-4">0,1 - 66</td><td class="py-2 px-4">1,45 - 657,3</td><td class="py-2 px-4 text-center">40</td><td class="py-2 px-4 text-center">20</td></tr><tr class="border-b"><td class="py-2 px-4">> 66 - 165</td><td class="py-2 px-4">> 657,3 - 2393,1</td><td class="py-2 px-4 text-center">60</td><td class="py-2 px-4 text-center">30</td></tr><tr class="border-b"><td class="py-2 px-4">> 165 - 700</td><td class="py-2 px-4">> 2393,1 - 10152,6</td><td class="py-2 px-4 text-center">80</td><td class="py-2 px-4 text-center">40</td></tr><tr class="border-b"><td class="py-2 px-4 font-semibold">Soft sealing plate</td><td class="py-2 px-4" colspan="2">All ranges</td><td class="py-2 px-4 text-center">20</td><td class="py-2 px-4 text-center">10</td></tr><tr><td class="py-2 px-4 font-semibold">Soft sealing O-Ring</td><td class="py-2 px-4" colspan="2">All ranges</td><td class="py-2 px-4 text-center">0</td><td class="py-2 px-4 text-center">0</td></tr></tbody></table></div>
             </div>
             <div class="mt-6">
-                 <button class="gemini-btn bg-amber-600 hover:bg-amber-700" data-slide-id="slide17" data-action="diagnose">✨ หากทดสอบไม่ผ่าน? วิเคราะห์สาเหตุ</button>
+                 <button class="gemini-btn bg-amber-600 hover:bg-amber-700" data-slide-id="slide17" data-action="diagnose" disabled>✨ หากทดสอบไม่ผ่าน? วิเคราะห์สาเหตุ</button>
             </div>
-            <button class="tts-btn" data-slide-id="slide17"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide17" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 18: Final Quality Check -->
@@ -378,7 +406,7 @@
                     <li>ข้อมูลที่ TAG ถูกต้องหรือไม่?</li>
                 </ul>
             </div>
-            <button class="tts-btn" data-slide-id="slide18"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide18" disabled><i class="fas fa-volume-up"></i></button>
         </div>
         
         <!-- Slide 19: Overhaul Frequency -->
@@ -391,7 +419,7 @@
                     <li>เมื่อ PSV (วาล์วนิรภัย) ทำงานผิดปกติ</li>
                 </ul>
             </div>
-            <button class="tts-btn" data-slide-id="slide19"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide19" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 20: References -->
@@ -403,7 +431,7 @@
                     <li>API Standard 527 Seat Tightness of Pressure Relief Valves</li>
                 </ul>
             </div>
-            <button class="tts-btn" data-slide-id="slide20"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide20" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
         <!-- Slide 21: Q&A -->
@@ -411,7 +439,7 @@
             <div class="slide-content">
                 <h1 class="text-5xl font-bold">ถาม - ตอบ</h1>
             </div>
-            <button class="tts-btn" data-slide-id="slide21"><i class="fas fa-volume-up"></i></button>
+            <button class="tts-btn" data-slide-id="slide21" disabled><i class="fas fa-volume-up"></i></button>
         </div>
 
     </div>
@@ -450,11 +478,17 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const loadingOverlay = document.getElementById('loading-overlay');
         const loadingText = document.getElementById('loading-text');
+        
+        const apiKeyModal = document.getElementById('api-key-modal');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+        const skipApiKeyBtn = document.getElementById('skip-api-key-btn');
 
         const totalSlides = slides.length;
         let currentSlide = 0;
         let audioContext;
         let currentAudio = null;
+        let API_KEY = null;
 
         // --- Navigation Logic ---
         function updateControls() {
@@ -489,12 +523,13 @@
         });
 
         document.addEventListener('keydown', (e) => {
+            if (apiKeyModal.style.display !== 'none') return;
             if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
             else if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
             else if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
         });
 
-        // --- Modal Logic ---
+        // --- AI/Modal Logic ---
         function showModal(title, content) {
             modalTitle.textContent = title;
             modalContent.innerHTML = content;
@@ -510,7 +545,6 @@
             if (e.target === modal) closeModal();
         });
 
-        // --- Loading Overlay Logic ---
         function showLoading(text = 'กำลังประมวลผล...') {
             loadingText.textContent = text;
             loadingOverlay.classList.remove('hidden');
@@ -519,12 +553,56 @@
         function hideLoading() {
             loadingOverlay.classList.add('hidden');
         }
-        
-        // --- Gemini API Logic ---
-        const API_KEY = "AIzaSyBbokJJMSIj6FM_rNuWdcKqut1YPeoUHJo"; // Provided by the environment
 
-        // Function to get text response from Gemini
+        function enableAIFeatures() {
+            document.querySelectorAll('.gemini-btn, .tts-btn').forEach(btn => {
+                btn.disabled = false;
+            });
+        }
+
+        function hideAIFeatures() {
+            document.querySelectorAll('.gemini-btn, .tts-btn').forEach(btn => {
+                btn.style.display = 'none';
+            });
+        }
+
+        // --- API Key Handling ---
+        function initializeApp(apiKey) {
+            if (apiKey) {
+                API_KEY = apiKey;
+                sessionStorage.setItem('geminiApiKey', apiKey);
+                apiKeyModal.classList.add('hidden');
+                enableAIFeatures();
+            } else {
+                apiKeyModal.classList.remove('hidden');
+            }
+        }
+
+        saveApiKeyBtn.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key) {
+                initializeApp(key);
+            } else {
+                alert('กรุณาใส่ API Key');
+            }
+        });
+
+        skipApiKeyBtn.addEventListener('click', () => {
+            apiKeyModal.classList.add('hidden');
+            hideAIFeatures();
+        });
+
+        // Check for key in session storage on load
+        const storedKey = sessionStorage.getItem('geminiApiKey');
+        if (storedKey) {
+            initializeApp(storedKey);
+        } else {
+            apiKeyModal.classList.remove('hidden');
+        }
+
+        // --- Gemini API Call Logic ---
         async function getGeminiTextResponse(prompt) {
+            if (!API_KEY) return "กรุณาใส่ API Key เพื่อใช้งานฟีเจอร์นี้";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
 
@@ -535,13 +613,15 @@
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
+                    const errorData = await response.json();
+                    console.error("API Error Data:", errorData);
+                    throw new Error(`API Error: ${response.status} ${response.statusText}. อาจเป็นเพราะ API Key ไม่ถูกต้อง`);
                 }
                 const result = await response.json();
                 return result.candidates[0].content.parts[0].text;
             } catch (error) {
                 console.error("Gemini API call failed:", error);
-                return "ขออภัย, เกิดข้อผิดพลาดในการเรียกข้อมูลจาก AI";
+                return `ขออภัย, เกิดข้อผิดพลาดในการเรียกข้อมูลจาก AI: ${error.message}`;
             }
         }
 
@@ -566,9 +646,7 @@
             const view = new DataView(buffer);
 
             function writeString(view, offset, string) {
-                for (let i = 0; i < string.length; i++) {
-                    view.setUint8(offset + i, string.charCodeAt(i));
-                }
+                for (let i = 0; i < string.length; i++) { view.setUint8(offset + i, string.charCodeAt(i)); }
             }
 
             writeString(view, 0, 'RIFF');
@@ -576,7 +654,7 @@
             writeString(view, 8, 'WAVE');
             writeString(view, 12, 'fmt ');
             view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true); // PCM
+            view.setUint16(20, 1, true);
             view.setUint16(22, numChannels, true);
             view.setUint32(24, sampleRate, true);
             view.setUint32(28, byteRate, true);
@@ -586,9 +664,7 @@
             view.setUint32(40, dataSize, true);
 
             const pcm16 = new Int16Array(pcmData.buffer);
-            for (let i = 0; i < pcmData.length; i++) {
-                view.setInt16(44 + i * 2, pcmData[i], true);
-            }
+            for (let i = 0; i < pcmData.length; i++) { view.setInt16(44 + i * 2, pcmData[i], true); }
 
             return new Blob([view], { type: 'audio/wav' });
         }
@@ -602,6 +678,11 @@
                 return;
             }
 
+            if (!API_KEY) {
+                showModal("ข้อผิดพลาด", "กรุณาใส่ API Key เพื่อใช้งานระบบอ่านออกเสียง");
+                return;
+            }
+
             showLoading('กำลังสร้างเสียงพูด...');
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
@@ -611,19 +692,12 @@
                     contents: [{ parts: [{ text: `โปรดอ่านข้อความต่อไปนี้ด้วยน้ำเสียงชัดเจนและเป็นทางการ: ${text}` }] }],
                     generationConfig: {
                         responseModalities: ["AUDIO"],
-                        speechConfig: {
-                            voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } // A clear voice
-                        }
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
                     },
                     model: "gemini-2.5-flash-preview-tts"
                 };
 
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`TTS API Error: ${response.statusText}`);
 
                 const result = await response.json();
@@ -648,14 +722,12 @@
                         button.innerHTML = '<i class="fas fa-volume-up"></i>';
                         currentAudio = null;
                     };
-
                 } else {
                     throw new Error("Invalid audio data in response.");
                 }
-
             } catch (error) {
                 console.error("TTS failed:", error);
-                showModal("ข้อผิดพลาด", "ขออภัย, ไม่สามารถสร้างเสียงพูดได้ในขณะนี้");
+                showModal("ข้อผิดพลาด", `ขออภัย, ไม่สามารถสร้างเสียงพูดได้: ${error.message}`);
                 button.innerHTML = '<i class="fas fa-volume-up"></i>';
             } finally {
                 hideLoading();
@@ -665,6 +737,7 @@
         // --- Event Listeners for AI buttons ---
         document.querySelectorAll('.gemini-btn').forEach(button => {
             button.addEventListener('click', async () => {
+                if (button.disabled) return;
                 const slideId = button.dataset.slideId;
                 const action = button.dataset.action;
                 const slideContentElement = document.querySelector(`#${slideId} .slide-content`);
@@ -692,6 +765,7 @@
         
         document.querySelectorAll('.tts-btn').forEach(button => {
             button.addEventListener('click', (e) => {
+                if(e.currentTarget.disabled) return;
                 const slideId = e.currentTarget.dataset.slideId;
                 const slideContentElement = document.querySelector(`#${slideId} .slide-content`);
                 const textToSpeak = slideContentElement.innerText;
